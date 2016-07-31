@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
 
@@ -28,16 +30,12 @@ public class MainActivity extends AppCompatActivity implements OnDiscoveredTagLi
 
     private long diff;
 
-    private TextView somatorioTempo;
+    @Bind(R.id.txt_somatorioTempo) TextView somatorioTempo;
 
-    private EditText horarioTrabalhoEntrada;
-    private EditText horarioTrabalhoSaida;
-    private EditText horarioAlmoco;
-    private EditText horarioVoltaAlmoco;
-
-    public MainActivity() {
-    }
-
+    @Bind(R.id.horarioTrabalhoEntrada) EditText horarioTrabalhoEntrada;
+    @Bind(R.id.horarioTrabalhoSaida)   EditText horarioTrabalhoSaida;
+    @Bind(R.id.horarioAlmoco)   EditText horarioAlmoco;
+    @Bind(R.id.horarioAlmocoSaida)   EditText horarioVoltaAlmoco;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,31 +43,17 @@ public class MainActivity extends AppCompatActivity implements OnDiscoveredTagLi
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
 
-        horarioTrabalhoEntrada = (EditText) findViewById(R.id.horarioTrabalhoEntrada);
-        horarioTrabalhoSaida = (EditText) findViewById(R.id.horarioTrabalhoSaida);
-        horarioAlmoco = (EditText) findViewById(R.id.horarioAlmoco);
-        horarioVoltaAlmoco = (EditText) findViewById(R.id.horarioAlmocoSaida);
-
-        somatorioTempo = (TextView) findViewById(R.id.txt_somatorioTempo);
 
         horarioVoltaAlmoco.addTextChangedListener(new HorarioTextWatcher(){
 
-            public void afterTextChanged(Editable s) {
-                horatioVoltaAlmoco = String.valueOf(s.toString());
-            }
+            public void afterTextChanged(Editable s) { horatioVoltaAlmoco = String.valueOf(s.toString());}
         });
-
-
 
         horarioTrabalhoEntrada.addTextChangedListener(new HorarioTextWatcher(){
 
-            public void afterTextChanged(Editable s) {
-                horaEntradaTrabalho = String.valueOf(s.toString());
-            }
-
-
-
+            public void afterTextChanged(Editable s) { horaEntradaTrabalho = String.valueOf(s.toString());}
         });
 
         horarioTrabalhoSaida.addTextChangedListener(new HorarioTextWatcher() {
@@ -103,8 +87,6 @@ public class MainActivity extends AppCompatActivity implements OnDiscoveredTagLi
                     somatorioTempo.setText(DateTimeUtil.longToStringDate(diff));
             }
         }
-
-
     });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -112,24 +94,15 @@ public class MainActivity extends AppCompatActivity implements OnDiscoveredTagLi
             @Override
             public void onClick(View view) {
 
-                if(horarioTrabalhoEntrada.hasFocus()){
-                    horarioTrabalhoEntrada.setText(DateTimeUtil.getTimeNow());
+                inserirHorarioTela();
 
-                }else if(horarioTrabalhoSaida.hasFocus()){
-                    horarioTrabalhoSaida.setText(DateTimeUtil.getTimeNow());
-
-                }else if(horarioAlmoco.hasFocus()){
-                    horarioAlmoco.setText(DateTimeUtil.getTimeNow());
-
-                }else if(horarioVoltaAlmoco.hasFocus()){
-                    horarioVoltaAlmoco.setText(DateTimeUtil.getTimeNow());
-
-                }
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Horário inserido.", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -168,7 +141,10 @@ public class MainActivity extends AppCompatActivity implements OnDiscoveredTagLi
     @Override
     public void tagDiscovered(Tag tag) {
         Log.i("TIMETRACKING", "Reading card...");
+        inserirHorarioTela();
+    }
 
+    public void inserirHorarioTela(){
         if(horarioTrabalhoEntrada.hasFocus()){
             horarioTrabalhoEntrada.setText(DateTimeUtil.getTimeNow());
 
@@ -184,6 +160,6 @@ public class MainActivity extends AppCompatActivity implements OnDiscoveredTagLi
         }else{
             horarioTrabalhoEntrada.setText(DateTimeUtil.getTimeNow());
         }
-
     }
+
 }

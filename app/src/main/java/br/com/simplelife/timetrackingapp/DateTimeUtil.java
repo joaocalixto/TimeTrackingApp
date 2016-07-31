@@ -1,6 +1,8 @@
 package br.com.simplelife.timetrackingapp;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -35,6 +37,22 @@ public class DateTimeUtil {
        long diffHours = tempo / (60 * 60 * 1000) % 24;
 
         return diffHours + ":" + diffMinutes + ":" + diffSeconds;
+
+    }
+
+    public static String getTimeNow(){
+        // Create an instance of SimpleDateFormat used for formatting
+// the string representation of date (month/day/year)
+        DateFormat df = new SimpleDateFormat("HH:mm:ss");
+
+// Get the date today using Calendar object.
+        Date today = Calendar.getInstance().getTime();
+// Using DateFormat format method we can create a string
+// representation of a date with the defined format.
+        String reportDate = df.format(today);
+
+// Print what date is today!
+        return reportDate;
 
     }
 

@@ -1,27 +1,43 @@
 package br.com.simplelife.timetrackingapp;
 
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import nordpol.android.OnDiscoveredTagListener;
+import nordpol.android.TagDispatcher;
+
+public class MainActivity extends AppCompatActivity implements OnDiscoveredTagListener {
 
     private String horaEntradaTrabalho;
     private String horaAlmoco;
     private String horatioVoltaAlmoco;
     private String horarioSaidaTrabalho;
 
+    private TagDispatcher tagDispatcher;
+
     private long diff;
 
     private TextView somatorioTempo;
+
+    private EditText horarioTrabalhoEntrada;
+    private EditText horarioTrabalhoSaida;
+    private EditText horarioAlmoco;
+    private EditText horarioVoltaAlmoco;
+
+    public MainActivity() {
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +46,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        EditText horarioTrabalhoEntrada = (EditText) findViewById(R.id.horarioTrabalhoEntrada);
-        EditText horarioTrabalhoSaida = (EditText) findViewById(R.id.horarioTrabalhoSaida);
-        EditText horarioAlmoco = (EditText) findViewById(R.id.horarioAlmoco);
-        EditText horarioVoltaAlmoco = (EditText) findViewById(R.id.horarioAlmocoSaida);
+        horarioTrabalhoEntrada = (EditText) findViewById(R.id.horarioTrabalhoEntrada);
+        horarioTrabalhoSaida = (EditText) findViewById(R.id.horarioTrabalhoSaida);
+        horarioAlmoco = (EditText) findViewById(R.id.horarioAlmoco);
+        horarioVoltaAlmoco = (EditText) findViewById(R.id.horarioAlmocoSaida);
 
         somatorioTempo = (TextView) findViewById(R.id.txt_somatorioTempo);
 
@@ -95,6 +111,20 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if(horarioTrabalhoEntrada.hasFocus()){
+                    horarioTrabalhoEntrada.setText(DateTimeUtil.getTimeNow());
+
+                }else if(horarioTrabalhoSaida.hasFocus()){
+                    horarioTrabalhoSaida.setText(DateTimeUtil.getTimeNow());
+
+                }else if(horarioAlmoco.hasFocus()){
+                    horarioAlmoco.setText(DateTimeUtil.getTimeNow());
+
+                }else if(horarioVoltaAlmoco.hasFocus()){
+                    horarioVoltaAlmoco.setText(DateTimeUtil.getTimeNow());
+
+                }
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -121,5 +151,39 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        tagDispatcher = TagDispatcher.get(this, this);
+        tagDispatcher.enableExclusiveNfc();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void tagDiscovered(Tag tag) {
+        Log.i("TIMETRACKING", "Reading card...");
+
+        if(horarioTrabalhoEntrada.hasFocus()){
+            horarioTrabalhoEntrada.setText(DateTimeUtil.getTimeNow());
+
+        }else if(horarioTrabalhoSaida.hasFocus()){
+            horarioTrabalhoSaida.setText(DateTimeUtil.getTimeNow());
+
+        }else if(horarioAlmoco.hasFocus()){
+            horarioAlmoco.setText(DateTimeUtil.getTimeNow());
+
+        }else if(horarioVoltaAlmoco.hasFocus()){
+            horarioVoltaAlmoco.setText(DateTimeUtil.getTimeNow());
+
+        }else{
+            horarioTrabalhoEntrada.setText(DateTimeUtil.getTimeNow());
+        }
+
     }
 }

@@ -6,21 +6,21 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
     private String horaEntradaTrabalho;
     private String horaAlmoco;
+    private String horatioVoltaAlmoco;
+    private String horarioSaidaTrabalho;
+
+    private long diff;
+
     private TextView somatorioTempo;
 
     @Override
@@ -33,21 +33,20 @@ public class MainActivity extends AppCompatActivity {
         EditText horarioTrabalhoEntrada = (EditText) findViewById(R.id.horarioTrabalhoEntrada);
         EditText horarioTrabalhoSaida = (EditText) findViewById(R.id.horarioTrabalhoSaida);
         EditText horarioAlmoco = (EditText) findViewById(R.id.horarioAlmoco);
-        EditText horarioAlmocoSaida = (EditText) findViewById(R.id.horarioAlmocoSaida);
+        EditText horarioVoltaAlmoco = (EditText) findViewById(R.id.horarioAlmocoSaida);
 
         somatorioTempo = (TextView) findViewById(R.id.txt_somatorioTempo);
 
+        horarioVoltaAlmoco.addTextChangedListener(new HorarioTextWatcher(){
 
-        horarioTrabalhoEntrada.addTextChangedListener(new TextWatcher(){
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+            public void afterTextChanged(Editable s) {
+                horatioVoltaAlmoco = String.valueOf(s.toString());
             }
+        });
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-            }
+
+        horarioTrabalhoEntrada.addTextChangedListener(new HorarioTextWatcher(){
 
             public void afterTextChanged(Editable s) {
                 horaEntradaTrabalho = String.valueOf(s.toString());
@@ -57,58 +56,40 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        horarioAlmoco.addTextChangedListener(new TextWatcher(){
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
+        horarioTrabalhoSaida.addTextChangedListener(new HorarioTextWatcher() {
             public void afterTextChanged(Editable s) {
-                horaAlmoco = String.valueOf(s.toString());
 
-                if(!horaEntradaTrabalho.isEmpty() && horaEntradaTrabalho.length() == 8 && horaAlmoco.length() == 8){
+                horarioSaidaTrabalho = String.valueOf(s.toString());
 
+                if(!horatioVoltaAlmoco.isEmpty() && horatioVoltaAlmoco.length() == 8 && horarioSaidaTrabalho.length() == 8){
 
+                    long diffTemp = DateTimeUtil.calculateDateDiff(horatioVoltaAlmoco, horarioSaidaTrabalho);
 
-                    SimpleDateFormat sdf=new SimpleDateFormat("HH:mm:ss");
+                    if(somatorioTempo.getText().toString().isEmpty()){
+                        somatorioTempo.setText(DateTimeUtil.longToStringDate(diffTemp));
+                    }else{
+                        long somatorio = diff + diffTemp;
 
-                    Date d1 = null;
-                    Date d2 = null;
-                    long diffSeconds;
-                    long diffMinutes;
-                    long diffHours;
-
-                    try {
-                        d1 = sdf.parse(horaEntradaTrabalho);
-                        d2 = sdf.parse(horaAlmoco);
-
-                        long diff = Math.abs(d1.getTime() - d2.getTime());
-                        diffSeconds = diff / 1000 % 60;
-
-                        diffMinutes = diff / (60 * 1000) % 60;
-                        diffHours = diff / (60 * 60 * 1000) % 24;
-                        somatorioTempo.setText(diffHours + ":" + diffMinutes + ":" + diffSeconds);
-
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                        somatorioTempo.setText(DateTimeUtil.longToStringDate(somatorio));
                     }
-
-
-
-
-
-
                 }
             }
 
-
-
         });
+
+        horarioAlmoco.addTextChangedListener(new HorarioTextWatcher() {
+            public void afterTextChanged(Editable s) {
+                horaAlmoco = String.valueOf(s.toString());
+
+                if (!horaEntradaTrabalho.isEmpty() && horaEntradaTrabalho.length() == 8 && horaAlmoco.length() == 8) {
+
+                    diff = DateTimeUtil.calculateDateDiff(horaEntradaTrabalho, horaAlmoco);
+                    somatorioTempo.setText(DateTimeUtil.longToStringDate(diff));
+            }
+        }
+
+
+    });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

@@ -1,5 +1,6 @@
 package br.com.simplelife.timetrackingapp;
 
+import android.app.Notification;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +15,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import br.com.goncalves.pugnotification.notification.PugNotification;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import nordpol.android.OnDiscoveredTagListener;
@@ -44,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements OnDiscoveredTagLi
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
+
+        setNotifications();
 
 
         horarioVoltaAlmoco.addTextChangedListener(new HorarioTextWatcher(){
@@ -102,6 +109,41 @@ public class MainActivity extends AppCompatActivity implements OnDiscoveredTagLi
         });
     }
 
+    private void setNotifications() {
+
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            java.sql.Date data = new java.sql.Date(format.parse("12:00:00").getTime());
+            java.sql.Date data2 = new java.sql.Date(format.parse("18:00:00").getTime());
+
+
+            PugNotification.with(getApplicationContext())
+                .load()
+                .title("Hora de ir almoçar")
+                .message("Não esqueça de bater seu ponto")
+                .bigTextStyle("Hora de almoco")
+                .smallIcon(R.drawable.icon_clock)
+                .largeIcon(R.drawable.icon_clock)
+                .flags(Notification.DEFAULT_ALL).when(data.getTime())
+                .simple()
+                .build();
+
+            PugNotification.with(getApplicationContext())
+                    .load()
+                    .title("Hora de ir almoçar")
+                    .message("Não esqueça de bater seu ponto")
+                    .bigTextStyle("Hora de almoco")
+                    .smallIcon(R.drawable.icon_clock)
+                    .largeIcon(R.drawable.icon_clock)
+                    .flags(Notification.DEFAULT_ALL)
+                    .when(data2.getTime())
+                    .simple()
+                    .build();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     @Override

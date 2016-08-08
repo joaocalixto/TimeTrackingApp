@@ -31,4 +31,8 @@ dependencies {
     //NFC
     compile 'com.fidesmo:nordpol-android:0.1.19'
 
+    //Notification
+    compile 'com.github.halysongoncalves:pugnotification:1.8.1'
+
+
 }
